@@ -1,6 +1,6 @@
 {
-  "name": "public-pwa-kisah-nabi",
-  "short_name": "public-pwa-kisah-nabi",
+  "name": "public",
+  "short_name": "public",
   "icons": [
     {
       "src": "/static/img/icons/android-chrome-192x192.png",
