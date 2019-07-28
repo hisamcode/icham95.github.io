@@ -1,0 +1,66 @@
+<html>
+
+<head>
+  <title>Simple Map</title>
+  <meta name="viewport" content="initial-scale=1.0">
+  <meta charset="utf-8">
+  <style>
+    /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+    #map {
+      height: 100%;
+    }
+
+    /* Optional: Makes the sample page fill the window. */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD--sQQPRdzoxCrwvyry5Q76E0Rj8KdxVU&callback=initMap"
+    async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+  <script>
+    var map;
+    var key = 'AIzaSyD--sQQPRdzoxCrwvyry5Q76E0Rj8KdxVU'
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: {
+          lat: -6.595038,
+          lng: 106.816635
+        },
+        zoom: 15
+      });
+
+      const socket = io.connect('https://kauber.herokuapp.com/bogor')
+      socket.on('connect', (test) => {
+        socket.emit('authenticate', {
+          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWQzZDM0ODY2MTk3N2Y2ZThiYjU2MjQ4IiwibmFtZSI6ImRyaXZlciIsImVtYWlsIjoiZHJpdmVyQGdtYWlsLmNvbSIsInJvbGUiOjEsImNvbnRhY3QiOiIwODk3OTk1NjMzMCIsImNyZWF0ZWRfYXQiOiIyMDE5LTA3LTI4VDA1OjM3OjEwLjI5MFoiLCJ1cGRhdGVkX2F0IjoiMjAxOS0wNy0yOFQwNTozNzoxMC4yOTBaIn0sImlhdCI6MTU2NDI5MjIzOCwiZXhwIjoxNTY2OTIwMjM4fQ.f5RyM9qQ75lgyCCu9-IuwUTJHANhpVV8wrN0wHgiReM'
+        }).on('authenticated', () => {
+          console.log('authenticated')
+          map.addListener('click', (e) => {
+            let latitude = e.latLng.lat()
+            let longitude = e.latLng.lng();
+            console.log(latitude, longitude)
+            socket.emit('request driver position for user', {
+              _id: 1234,
+              name: 'driver',
+              latitude,
+              longitude
+            })
+          })
+        })
+
+      })
+    }
+  </script>
+</body>
+
+</html>
